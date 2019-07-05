@@ -1,6 +1,6 @@
 {% load cache %}
 <h3>{{ target.identifier }}</h3>
-{% if target.featured_image %}
+{% if target.featured_image and target.featured_image.get_preview %}
 {% cache None featured_image target.id %}
 <img src="{{ target.featured_image.get_preview }}" id="featured-image" onerror="this.style.display='none'">
 {% endcache %}

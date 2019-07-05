@@ -44,7 +44,7 @@
               {{ product.get_tag_display }}
             {% endif %}
           </a></td>
-          {% if product.get_file_extension == '.fz' or product.get_file_extension == '.fits' %}
+          {% if product.get_file_extension == '.fz' or product.get_file_extension == '.fits' or product.tag == 'image_file' %}
           <td>
             {% cache None thumbnail product.id %}
             <img src="{{ product.get_preview }}" class="thumbnail"><br/>

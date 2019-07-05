@@ -156,7 +156,8 @@ class Target(models.Model):
         return reverse('targets:detail', kwargs={'pk': self.id})
 
     def featured_image(self):
-        return self.dataproduct_set.filter(tag='fits_file', featured=True).first()
+        image_types = ('fits_file', 'image_file')
+        return self.dataproduct_set.filter(tag__in=image_types, featured=True).first()
 
     def light_curve(self):
         return self.dataproduct_set.reduceddatum_set.filter(data_type='photometry').all()

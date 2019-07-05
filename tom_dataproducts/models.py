@@ -114,7 +114,7 @@ class DataProduct(models.Model):
 
     def get_preview(self, size=settings.THUMBNAIL_DEFAULT_SIZE, redraw=False):
         if self.thumbnail:
-            im = Image.open(self.thumbnail)
+            im = Image.open(self.thumbnail.path)
             if im.size != settings.THUMBNAIL_DEFAULT_SIZE:
                 redraw = True
 
@@ -128,17 +128,25 @@ class DataProduct(models.Model):
                     self.thumbnail.save(filename, File(f), save=True)
                     self.save()
                 tmpfile.close()
-        return self.thumbnail.url
+        if self.thumbnail:
+            return self.thumbnail.url
+        return None
 
     def create_thumbnail(self, width=None, height=None):
-        if is_fits_image_file(self.data.file.name):
-            tmpfile = tempfile.NamedTemporaryFile()
+        tmpfile = tempfile.NamedTemporaryFile()
+
+        if self.tag == IMAGE_FILE[0]:
+            im = Image.open(self.data.path)
+            fmt = os.path.splitext(self.data.path)[-1][1:]
+            im.resize((width, height)).save(tmpfile, format=fmt)
+        elif is_fits_image_file(self.data.file.name):
             if not width or not height:
                 width, height = find_img_size(self.data.file.name)
             resp = fits_to_jpg(self.data.file.name, tmpfile.name, width=width, height=height)
-            if resp:
-                return tmpfile
-        return
+            # TODO: what happens in this case?
+            # if resp:
+            #     return tmpfile
+        return tmpfile
 
 
 class ReducedDatum(models.Model):
